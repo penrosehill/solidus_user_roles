@@ -2,17 +2,7 @@ module SolidusUserRoles
   module Generators
     class InstallGenerator < Rails::Generators::Base
 
-      class_option :auto_run_migrations, :type => :boolean, :default => false
-
-      def add_javascripts
-        append_file 'vendor/assets/javascripts/spree/frontend/all.js', "//= require spree/frontend/solidus_user_roles\n"
-        append_file 'vendor/assets/javascripts/spree/backend/all.js', "//= require spree/backend/solidus_user_roles\n"
-      end
-
-      def add_stylesheets
-        inject_into_file 'vendor/assets/stylesheets/spree/frontend/all.css', " *= require spree/frontend/solidus_user_roles\n", :before => /\*\//, :verbose => true
-        inject_into_file 'vendor/assets/stylesheets/spree/backend/all.css', " *= require spree/backend/solidus_user_roles\n", :before => /\*\//, :verbose => true
-      end
+      class_option :auto_run_migrations, type: :boolean, default: false
 
       def add_migrations
         run 'bundle exec rake railties:install:migrations FROM=solidus_user_roles'
@@ -28,7 +18,7 @@ module SolidusUserRoles
       end
 
       def include_seed_data
-        append_file "db/seeds.rb", <<-SEEDS
+        append_file 'db/seeds.rb', <<-SEEDS
         \n
         SolidusUserRoles::Engine.load_seed if defined?(SolidusUserRoles::Engine)
         SEEDS

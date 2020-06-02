@@ -10,29 +10,20 @@ module SolidusUserRoles
     end
 
     def self.load_custom_permissions
-      if ActiveRecord::Base.connection.tables.include?('spree_roles')
-        Spree::Role.non_base_roles.each do |role|
-          if SolidusSupport.solidus_gem_version < Gem::Version.new('2.5.x')
-            Spree::RoleConfiguration.configure do |config|
-              config.assign_permissions role.name, role.permission_sets_constantized
-            end
-          else
-            Spree::Config.roles.assign_permissions role.name, role.permission_sets_constantized
-          end
+      if ActiveRecord::Base.connection.tables.include?('spree_permission_sets')
+        ::Spree::Role.non_base_roles.each do |role|
+          ::Spree::Config.roles.assign_permissions role.name, role.permission_sets_constantized
         end
       end
     rescue ActiveRecord::NoDatabaseError
-      warn "No database available, skipping role configuration"
+      warn 'No database available, skipping role configuration'
     end
-
 
     def self.activate
       Dir.glob(File.join(File.dirname(__FILE__), '../../app/**/*_decorator*.rb')) do |c|
         Rails.configuration.cache_classes ? require(c) : load(c)
       end
-      unless Rails.env == 'test'
-        SolidusUserRoles::Engine.load_custom_permissions
-      end
+      SolidusUserRoles::Engine.load_custom_permissions unless Rails.env.test?
     end
 
     config.to_prepare &method(:activate).to_proc
