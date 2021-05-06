@@ -1,6 +1,6 @@
 module SolidusUserRoles
   class Engine < Rails::Engine
-    include SolidusSupport::EngineExtensions::Decorators
+    include SolidusSupport::EngineExtensions
 
     engine_name 'solidus_user_roles'
     config.autoload_paths += %W(#{config.root}/lib)
